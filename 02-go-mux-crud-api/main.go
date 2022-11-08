@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -38,7 +39,10 @@ func main() {
 
 // route handlers
 
-func getPosts(w http.ResponseWriter, r *http.Request) {}
+func getPosts(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "Application/json")
+	json.NewEncoder(w).Encode(dbPosts)
+}
 
 func createPost(w http.ResponseWriter, r *http.Request) {}
 
