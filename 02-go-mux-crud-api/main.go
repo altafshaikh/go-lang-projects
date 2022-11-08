@@ -3,12 +3,15 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
 
 type Post struct {
+	ID     string `json:id`
 	Title  string `json:title`
 	Body   string `json:body`
 	Author User   `json:user`
@@ -44,7 +47,17 @@ func getPosts(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(dbPosts)
 }
 
-func createPost(w http.ResponseWriter, r *http.Request) {}
+func createPost(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "Application/json")
+
+	var newPost Post
+	_ = json.NewDecoder(r.Body).Decode(&newPost)
+
+	newPost.ID = strconv.Itoa(rand.Intn(100000000))
+	dbPosts = append(dbPosts, newPost)
+
+	json.NewEncoder(w).Encode(dbPosts)
+}
 
 func getPostByUid(w http.ResponseWriter, r *http.Request) {}
 
