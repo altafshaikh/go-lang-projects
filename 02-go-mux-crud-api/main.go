@@ -45,6 +45,7 @@ func main() {
 func getPosts(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "Application/json")
 	json.NewEncoder(w).Encode(dbPosts)
+
 }
 
 func createPost(w http.ResponseWriter, r *http.Request) {
@@ -59,8 +60,48 @@ func createPost(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(dbPosts)
 }
 
-func getPostByUid(w http.ResponseWriter, r *http.Request) {}
+func getPostByUid(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "Application/json")
+	params := mux.Vars(r)
 
-func updatePostByUid(w http.ResponseWriter, r *http.Request) {}
+	for _, post := range dbPosts {
+		if post.ID == params["id"] {
+			json.NewEncoder(w).Encode(post)
+			return
+		}
+	}
+}
 
-func deletePostByUid(w http.ResponseWriter, r *http.Request) {}
+func updatePostByUid(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "Application/json")
+	params := mux.Vars(r)
+
+	for index, post := range dbPosts {
+		if post.ID == params["id"] {
+			dbPosts = append(dbPosts[:index], dbPosts[index+1:]...)
+
+			var newPost Post
+			_ = json.NewDecoder(r.Body).Decode(&newPost)
+
+			newPost.ID = params["id"]
+			dbPosts = append(dbPosts, newPost)
+
+			json.NewEncoder(w).Encode(newPost)
+			return
+		}
+	}
+}
+
+func deletePostByUid(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "Application/json")
+	params := mux.Vars(r)
+
+	for index, post := range dbPosts {
+		if post.ID == params["id"] {
+			dbPosts = append(dbPosts[:index], dbPosts[index+1:]...)
+
+			json.NewEncoder(w).Encode(post)
+			return
+		}
+	}
+}
